@@ -1,0 +1,35 @@
+pipeline {
+    agent {
+     node {
+    		label 'myawsvm'
+    		}
+    }
+
+    stages {
+        stage('AppCode-Checkout') {
+            steps {
+                git changelog: false, poll: false, url: 'https://github.com/padmasrivuppuluri/aws-b4-maven-app.git'
+            }
+            }
+        stage('App-Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+            }
+        stage('Docker Build & Push') {
+            steps {
+
+            script {
+
+            withCredentials([string(credentialsId: 'docker-token', variable: 'token')]) {
+
+    			sh 'docker login -u padmasrivuppuluri -p ${token}'
+			}
+
+            }   
+                sh 'docker build . -t padmasrivuppuluri/cicd:v2'
+                sh 'docker push padmasrivuppuluri/cicd:v2'
+            }                        
+        }
+    }
+}
