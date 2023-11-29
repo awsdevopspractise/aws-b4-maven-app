@@ -29,6 +29,7 @@ pipeline {
             }   
                 sh 'docker build . -t padmasrivuppuluri/cicd:v2'
                 sh 'docker push padmasrivuppuluri/cicd:v2'
+                echo "Job is successfully completed"
             }                        
         }
     }
