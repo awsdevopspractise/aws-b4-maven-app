@@ -1,7 +1,7 @@
 pipeline {
     agent {
      node {
-    		label 'myawsvm'
+    		label 'myvm'
     		}
     }
      options    {
@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('AppCode-Checkout') {
             steps {
-                git changelog: false, poll: false, url: 'https://github.com/padmasrivuppuluri/aws-b4-maven-app.git'
+                git changelog: false, poll: false, url: 'https://github.com/padmasrivuppuluri/aws-b4-maven-app'
             }
             }
         stage('App-Build') {
