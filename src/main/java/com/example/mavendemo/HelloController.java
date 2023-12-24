@@ -8,7 +8,7 @@ public class HelloController {
 
     @RequestMapping("/")
     public String index() {
-        return "Greetings from Python Life DevOPS Class Today - Nov 18 2023 - Version 4 !";
+        return "Greetings from Python Life DevOPS Class Today - Nov 18 2023 - Version 3 !";
     }
 
 }
