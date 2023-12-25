@@ -1,10 +1,9 @@
 pipeline {
     agent {
      node {
-    		label 'myawsvm'
+    		label 'myvm'
     		}
     }
-
      options    {
                 timestamps()
                 buildDiscarder(logRotator(numToKeepStr: '1', artifactNumToKeepStr: '1'))
@@ -15,7 +14,7 @@ pipeline {
     stages {
         stage('AppCode-Checkout') {
             steps {
-                git changelog: false, poll: false, url: 'https://github.com/awsdevopspractise/aws-b4-maven-app.git'
+                git changelog: false, poll: false, url: 'https://github.com/padmasrivuppuluri/aws-b4-maven-app'
             }
             }
         stage('App-Build') {
@@ -31,44 +30,41 @@ pipeline {
 
             withCredentials([string(credentialsId: 'docker-token', variable: 'token')]) {
 
-    			sh 'docker login -u pylifedevops -p ${token}'
+    			sh 'docker login -u padmasrivuppuluri -p ${token}'
 			}
 
             }   
-                sh 'docker build . -t pylifedevops/cicd:v4'
-                sh 'docker push pylifedevops/cicd:v4'
-                echo "Job is successfully completed and Thank you"
+                sh 'docker build . -t padmasrivuppuluri/cicd:v3'
+                sh 'docker push padmasrivuppuluri/cicd:v3'
+                echo "Job is successfully completed"
             }                        
         }
-
         stage ('K8SManiFest-Checkout') {
                 steps {
 
-                    git 'https://github.com/awsdevopspractise/aws-k8s-cicd.git'
+                    git 'https://github.com/padmasrivuppuluri/aws-k8s-cicd-1.git'
 
                 }
             }
 
         stage ('Kubernetes AutoDeployment') {
-  
-
-                steps {
+             steps {
 
                     dir('manifests')
                      {
 
                     sh 'ls -l'
                     // kubectl apply -f <fileName>.yml
-                    sh 'kubectl --server=https://60D68DAE74E9C2E234A797B7CD3EE8AC.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token="eyJhbGciOiJSUzI1NiIsImtpZCI6Iks5VXQ2emxsSUVnblFDTHR1SVB4RkdoZ0RCUG40TldYUE9GN3VkdkVjQWcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImplbmtpbnMtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiamVua2lucyIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjVmZjM0N2VmLTkyZmMtNDAzMS1hNmE0LWU4MjhkZDEzMjA4ZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmplbmtpbnMifQ.Yuprn91icOeBuaKTmsMw4Fpo8EaYzEzKbH0zm78K2rdJzY58ZWVVnjaERqfAn3N0idXPCuiUHRUfPmxEN5v0rpuYYnvm1qJBt06FCt50jpa_elrDszqDaeiEa6llxMoZV6GF7dA-4WvcR4mIDeJ3C20IVw_Dz3YBsYYIroCyRKaYozCO48Zvm5hpf6N1U1V6kCxj0GKEt6Vxw9qJESMfLKDpFjjVVyQMqYODQh6NtiRKaDPoAo3U4KYVS2v3gJZznBZdK9_M68IKoBeEpsSYdbnlgOp_zQTcb8ppx8ntq4NkGXeK1F5AeS21a_6mdsY37eV2RLJ-j-0Bca-586s-qw" apply -f deployment.yml'
+                    sh 'kubectl --server=https://9EFD0F87FAEB08C9B1B45518A5B7B94D.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token="eyJhbGciOiJSUzI1NiIsImtpZCI6ImtjeEk5VWptcGVMSFNNLURFLW85NXIxQnVraFhjbnZXZXNYREF0TlVTTTQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImplbmtpbnMtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiamVua2lucyIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImMxOTk4Y2RjLTlmYmUtNDNlOC1hMzMxLTI3MzkzZjc1OWE2OSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmplbmtpbnMifQ.hkxWJsATwXYhqiALQC8i9PEWF6uZyxCnAe9BhRZxgUytZUF59PREkPdg_1gwRioZkRmT2oVrcbG2XTIojOVXHkcDnQI4PROP8L-5KuyX79iW3H611rpG2X0xyZsN9tN2gZ3t0_xecnh7_OdSZUkMt9ih_gyzC3tv_KV3X4OjILdPApUAREPlRONu5eI1KMqyi2TwuiKAM8A3gqwaWHaUL55V58VrsxOQs2VP0OIaK4Bmom76Er-oW3WuOkEhYoX_fz65sGu7fJnaLF_Qsl-Fi6JGPG6uVp9_RF5GZjgzwqTNBktDsQc_IRZG53iJlyek3jDy2q1dfv9HgYkZPH0yfQ" apply -f deployment.yml'
 
-                    sh 'kubectl --server=https://60D68DAE74E9C2E234A797B7CD3EE8AC.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token="eyJhbGciOiJSUzI1NiIsImtpZCI6Iks5VXQ2emxsSUVnblFDTHR1SVB4RkdoZ0RCUG40TldYUE9GN3VkdkVjQWcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImplbmtpbnMtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiamVua2lucyIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjVmZjM0N2VmLTkyZmMtNDAzMS1hNmE0LWU4MjhkZDEzMjA4ZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmplbmtpbnMifQ.Yuprn91icOeBuaKTmsMw4Fpo8EaYzEzKbH0zm78K2rdJzY58ZWVVnjaERqfAn3N0idXPCuiUHRUfPmxEN5v0rpuYYnvm1qJBt06FCt50jpa_elrDszqDaeiEa6llxMoZV6GF7dA-4WvcR4mIDeJ3C20IVw_Dz3YBsYYIroCyRKaYozCO48Zvm5hpf6N1U1V6kCxj0GKEt6Vxw9qJESMfLKDpFjjVVyQMqYODQh6NtiRKaDPoAo3U4KYVS2v3gJZznBZdK9_M68IKoBeEpsSYdbnlgOp_zQTcb8ppx8ntq4NkGXeK1F5AeS21a_6mdsY37eV2RLJ-j-0Bca-586s-qw" apply -f service.yml'
+                    sh 'kubectl --server=https://9EFD0F87FAEB08C9B1B45518A5B7B94D.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token="eyJhbGciOiJSUzI1NiIsImtpZCI6ImtjeEk5VWptcGVMSFNNLURFLW85NXIxQnVraFhjbnZXZXNYREF0TlVTTTQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImplbmtpbnMtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiamVua2lucyIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImMxOTk4Y2RjLTlmYmUtNDNlOC1hMzMxLTI3MzkzZjc1OWE2OSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmplbmtpbnMifQ.hkxWJsATwXYhqiALQC8i9PEWF6uZyxCnAe9BhRZxgUytZUF59PREkPdg_1gwRioZkRmT2oVrcbG2XTIojOVXHkcDnQI4PROP8L-5KuyX79iW3H611rpG2X0xyZsN9tN2gZ3t0_xecnh7_OdSZUkMt9ih_gyzC3tv_KV3X4OjILdPApUAREPlRONu5eI1KMqyi2TwuiKAM8A3gqwaWHaUL55V58VrsxOQs2VP0OIaK4Bmom76Er-oW3WuOkEhYoX_fz65sGu7fJnaLF_Qsl-Fi6JGPG6uVp9_RF5GZjgzwqTNBktDsQc_IRZG53iJlyek3jDy2q1dfv9HgYkZPH0yfQ" apply -f service.yml'
                     
-                    sh 'kubectl --server=https://60D68DAE74E9C2E234A797B7CD3EE8AC.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token="eyJhbGciOiJSUzI1NiIsImtpZCI6Iks5VXQ2emxsSUVnblFDTHR1SVB4RkdoZ0RCUG40TldYUE9GN3VkdkVjQWcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImplbmtpbnMtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiamVua2lucyIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjVmZjM0N2VmLTkyZmMtNDAzMS1hNmE0LWU4MjhkZDEzMjA4ZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmplbmtpbnMifQ.Yuprn91icOeBuaKTmsMw4Fpo8EaYzEzKbH0zm78K2rdJzY58ZWVVnjaERqfAn3N0idXPCuiUHRUfPmxEN5v0rpuYYnvm1qJBt06FCt50jpa_elrDszqDaeiEa6llxMoZV6GF7dA-4WvcR4mIDeJ3C20IVw_Dz3YBsYYIroCyRKaYozCO48Zvm5hpf6N1U1V6kCxj0GKEt6Vxw9qJESMfLKDpFjjVVyQMqYODQh6NtiRKaDPoAo3U4KYVS2v3gJZznBZdK9_M68IKoBeEpsSYdbnlgOp_zQTcb8ppx8ntq4NkGXeK1F5AeS21a_6mdsY37eV2RLJ-j-0Bca-586s-qw" rollout restart deployment/java-app-deployment'
+                    sh 'kubectl --server=https://9EFD0F87FAEB08C9B1B45518A5B7B94D.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token="eyJhbGciOiJSUzI1NiIsImtpZCI6ImtjeEk5VWptcGVMSFNNLURFLW85NXIxQnVraFhjbnZXZXNYREF0TlVTTTQifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImplbmtpbnMtc2EiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiamVua2lucyIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImMxOTk4Y2RjLTlmYmUtNDNlOC1hMzMxLTI3MzkzZjc1OWE2OSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0OmplbmtpbnMifQ.hkxWJsATwXYhqiALQC8i9PEWF6uZyxCnAe9BhRZxgUytZUF59PREkPdg_1gwRioZkRmT2oVrcbG2XTIojOVXHkcDnQI4PROP8L-5KuyX79iW3H611rpG2X0xyZsN9tN2gZ3t0_xecnh7_OdSZUkMt9ih_gyzC3tv_KV3X4OjILdPApUAREPlRONu5eI1KMqyi2TwuiKAM8A3gqwaWHaUL55V58VrsxOQs2VP0OIaK4Bmom76Er-oW3WuOkEhYoX_fz65sGu7fJnaLF_Qsl-Fi6JGPG6uVp9_RF5GZjgzwqTNBktDsQc_IRZG53iJlyek3jDy2q1dfv9HgYkZPH0yfQ" rollout restart deployment/java-app-deployment'
                     
                     echo "kubernetes deployment is done"
 
                     sh 'kubectl get deployments'
-                    sh 'kubectl get services'
+                    sh  'kubectl get services'
                     
                     }
 
